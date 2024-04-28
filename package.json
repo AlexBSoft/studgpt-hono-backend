@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "start": "npx tsx src/index.js",
+    "start": "tsx src/index.js",
     "dev": "tsx watch src/index.ts"
   },
   "dependencies": {
