@@ -1,3 +1,5 @@
+# StduGPT web - backend
+
 ```
 npm install
 npm run dev

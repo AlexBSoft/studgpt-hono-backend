@@ -35,7 +35,50 @@ export const generate = async (c: Context) => {
   if (data.model == "gemini") {
     try {
       // https://github.com/AlexBSoft/studgpt-gemini/blob/main/app/api/chat/route.tsx
+
+
+      const content = {
+        contents: [
+          ...data.messages
+        ],
+      }
+
+
+      console.log("content", content.contents);
+
+      //const model = data.files.length ? "gemini-pro-vision" : "gemini-pro";
+      const model = "gemini-pro"
+      const apiKey = process.env.GEMINI_API_KEY;
+
+      let requestConfig: any = {
+        method: "post",
+        body: JSON.stringify(content),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      };
+
+      if (process.env.PROXY_URL) requestConfig.agent = proxyAgent;
+
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
+        requestConfig
+      );
+      const r: any = await response.json();
+
+      console.log(r);
+
+      let result = {
+        message: {
+          ...r.candidates[0].content,
+          parts: r.candidates[0].content.parts[0],
+        }
+      }
+
+      return c.json(result);
+
     } catch (error: any) {
+      console.log(error)
       console.log(`Data from Axios: ${JSON.stringify(error.response.data)}`);
       return c.json({ error: "Error" });
     }
