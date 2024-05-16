@@ -9,6 +9,19 @@ export const getChats = async (c: Context) => {
     { $match: { user: user } },
     { $group: { _id: "$chatId", messages: { $push: "$$ROOT" } } },
     { $sort: { _id: -1 } },
+    // Add field "name" values the value of text of first message
+    {
+      $unwind: "$messages",
+    },
+    {
+      $unwind: "$messages.messages",
+    },
+
+    { $addFields: { name: "$messages.messages.parts.text" } },
+    { $group: { _id: "$_id", name: { $first: "$name" } } },
+
+    { $project: { name: 1, id: "$_id" } },
+    { $limit: 100 },
   ]);
 
   console.log(chats);
@@ -20,7 +33,7 @@ export const getMessages = async (c: Context) => {
   const chat = c.req.query("chat");
   if (!chat) return c.json({ error: "Chat is not provided" });
 
-  const messages = await Message.find({ chatId: chat });
+  const messages = await Message.findOne({ chatId: chat }).sort({ _id: -1 });
 
   return c.json(messages);
 };

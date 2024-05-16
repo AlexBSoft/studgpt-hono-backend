@@ -8,6 +8,7 @@ const MessageSchema = new mongoose.Schema(
     model: { type: String, required: true },
     result: { type: Object, required: false },
     messages: { type: Array, required: true },
+    totalTokens: { type: Number, required: false },
   },
   { timestamps: true }
 );
