@@ -2,6 +2,7 @@ import { Context } from "hono";
 import axios from "axios";
 import fetch from "node-fetch";
 import { HttpsProxyAgent } from "https-proxy-agent";
+import Message from "../models/message.model";
 
 const proxyAgent = process.env.PROXY_URL
   ? new HttpsProxyAgent(process.env.PROXY_URL)
@@ -36,18 +37,32 @@ export const generate = async (c: Context) => {
     try {
       // https://github.com/AlexBSoft/studgpt-gemini/blob/main/app/api/chat/route.tsx
 
-
       const content = {
-        contents: [
-          ...data.messages
+        contents: [...data.messages],
+        safetySettings: [
+          {
+            category: "HARM_CATEGORY_DANGEROUS_CONTENT",
+            threshold: "BLOCK_NONE",
+          },
+          {
+            category: "HARM_CATEGORY_HARASSMENT",
+            threshold: "BLOCK_NONE",
+          },
+          {
+            category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+            threshold: "BLOCK_NONE",
+          },
+          {
+            category: "HARM_CATEGORY_HATE_SPEECH",
+            threshold: "BLOCK_NONE",
+          },
         ],
-      }
-
+      };
 
       console.log("content", content.contents);
 
       //const model = data.files.length ? "gemini-pro-vision" : "gemini-pro";
-      const model = "gemini-pro"
+      const model = "gemini-pro";
       const apiKey = process.env.GEMINI_API_KEY;
 
       let requestConfig: any = {
@@ -72,13 +87,24 @@ export const generate = async (c: Context) => {
         message: {
           ...r.candidates[0].content,
           parts: r.candidates[0].content.parts[0],
-        }
-      }
+        },
+      };
+
+      // TODO: put message in DB
+      const gen = {
+        model: data.model,
+        chatId: data.chatId,
+        messages: data.messages,
+        result: result.message,
+        user: data.user || null,
+        //ip: ,
+      };
+      const m = new Message(gen);
+      await m.save();
 
       return c.json(result);
-
     } catch (error: any) {
-      console.log(error)
+      console.log(error);
       console.log(`Data from Axios: ${JSON.stringify(error.response.data)}`);
       return c.json({ error: "Error" });
     }

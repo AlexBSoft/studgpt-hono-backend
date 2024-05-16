@@ -2,12 +2,12 @@ import mongoose from "mongoose";
 
 const MessageSchema = new mongoose.Schema(
   {
-    name: { type: String, required: true },
-    email: { type: String, required: true },
-    password: { type: String, required: true },
-    avatar: { type: String, required: false },
-    role: { type: String, required: true },
-    tgid: { type: String, required: false },
+    user: { type: String, required: false },
+    ip: { type: String, required: false },
+    chatId: { type: String, required: true },
+    model: { type: String, required: true },
+    result: { type: Object, required: false },
+    messages: { type: Array, required: true },
   },
   { timestamps: true }
 );

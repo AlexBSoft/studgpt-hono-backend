@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import { generate } from "../controllers";
+import { generate, messages } from "../controllers";
 import { OpenAPIHono, createRoute, z } from "@hono/zod-openapi";
 //import { isAdmin, protect } from "../middlewares";
 
@@ -54,5 +54,9 @@ const generateRoute = createRoute({
 });
 
 apis.openapi(generateRoute, (c) => generate.generate(c));
+
+apis.get("/chats", (c) => messages.getChats(c));
+
+apis.get("/messages", (c) => messages.getMessages(c));
 
 export default apis;
