@@ -171,5 +171,5 @@ export const generate = async (c: Context) => {
     }
   }
 
-  return c.json({ x: "xx" });
+  return c.json({ error: "wrong model" });
 };
