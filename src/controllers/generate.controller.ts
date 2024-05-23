@@ -14,6 +14,67 @@ export const generate = async (c: Context) => {
   console.log(data);
 
   // Run ollama generation
+  if (data.model == "ictis-llama") {
+    try {
+      console.log(data.messages)
+
+      // Convert Gemini format to ollama format
+      let messages = data.messages.map((m: {role: string, parts: {text: string}})=> ({
+        role: m.role == "model" ? "assistant" : m.role,
+        content: m.parts.text
+      }))
+
+      // If request has first message - then add system prompt
+      if(data.messages.length == 1){
+        messages.unshift({
+          role: "system",
+          content: "Below is an instruction that describes a task. Write a response that appropriately completes the request."
+        })
+      }
+
+      //const res = await axios.post("http://127.0.0.1:11434/api/chat", {
+        //model: "ictis-llama",
+      const res = await axios.post(process.env.LOCAL_LLM || "http://localhost:1234/v1/chat/completions", {
+        model: "LM Studio Community/ictis",
+        messages: messages,
+        stream: false,
+      });
+
+      console.log("ollama res ",res.data)
+      
+
+      let result = {
+        message: {
+          role: "model",
+          parts: {
+            //text: res.data.message.content // ollama
+            text:  res.data.choices[0].message.content
+          },
+        }
+      };
+
+      // TODO: put message in DB
+      const gen = {
+        model: data.model,
+        chatId: data.chatId,
+        messages: data.messages,
+        result: result.message,
+        user: data.user || null,
+        //ip: ,
+      };
+      const m = new Message(gen);
+      await m.save();
+
+      return c.json(result);
+    } catch (error: any) {
+      console.log(error)
+      console.log(`Data from Axios: ${JSON.stringify(error.response ? error.response.data : null)}`);
+
+      return c.json({ error: "Error" });
+    }
+  }
+
+
   if (data.model == "ollama-wizardlm2") {
     try {
       const res = await axios.post("http://127.0.0.1:11434/api/chat", {

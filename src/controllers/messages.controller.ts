@@ -21,6 +21,7 @@ export const getChats = async (c: Context) => {
     { $group: { _id: "$_id", name: { $first: "$name" } } },
 
     { $project: { name: 1, id: "$_id" } },
+    { $sort: { _id: -1 } },
     { $limit: 100 },
   ]);
 
