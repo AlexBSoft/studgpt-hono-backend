@@ -7,6 +7,7 @@ const MessageSchema = new mongoose.Schema(
     chatId: { type: String, required: true },
     model: { type: String, required: true },
     result: { type: Object, required: false },
+    ragDocument: { type: String, required: false },
     messages: { type: Array, required: true },
     totalTokens: { type: Number, required: false },
   },
