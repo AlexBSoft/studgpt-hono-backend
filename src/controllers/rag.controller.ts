@@ -53,19 +53,19 @@ export const uploadDocument = async (c: Context) => {
   try {
     // Convert document to embeddings
 
-    const path = "node_modules/llamaindex/examples/abramov.txt";
+    //const path = "node_modules/llamaindex/examples/abramov.txt";
 
-    const essay = await fs.readFile(path, "utf-8");
+    //const essay = await fs.readFile(path, "utf-8");
 
     // Create Document object with essay
-    const document = new Document({ text: essay, id_: path });
+    //const document = new Document({ text: essay, id_: path });
 
     // Split text and create embeddings. Store them in a VectorStoreIndex
-    const index = await VectorStoreIndex.fromDocuments([document]);
+    //const index = await VectorStoreIndex.fromDocuments([document]);
 
     // Todo: save embeddings to db
 
-    console.log(index);
+    //console.log(index);
 
     const ragDocument = new RagDocument({
       fileName: data.fileName,

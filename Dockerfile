@@ -1,4 +1,4 @@
-FROM node:20-alpine
+FROM dockerhub.timeweb.cloud/library/node:20-alpine
 
 # Create app directory
 WORKDIR /src
